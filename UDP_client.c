@@ -279,6 +279,20 @@ static void Service (void)
 
            FD_SET(the_socket, &read_fds);
 
+           #ifdef WIN32
+           num_fds = 0;
+           #else
+           num_fds = the_socket + 1;
+           #endif
+
+           /*
+            * Have to set 'timeout' each time because
+            * on UNIX the select() resets it to "how much time
+            * was left", which is 0 on a timeout.
+            */
+           timeout_val.tv_sec  = 2; /* seconds  */
+           timeout_val.tv_usec = 0; /* uSeconds */
+
            status = select (num_fds,
                             &read_fds,
                             &write_fds,
